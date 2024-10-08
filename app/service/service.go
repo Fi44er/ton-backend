@@ -9,7 +9,7 @@ import (
 )
 
 func Create(ctx *fiber.Ctx, dto *dto.CreateTransaction) error {
-	transaction := model.TransactionData{
+	transaction := model.Header{
 		UserWalletAddress: dto.UserWalletAddress,
 		DepositeDate:      dto.DepositeDate,
 		ReceivingDate:     dto.ReceivingDate,
@@ -24,7 +24,7 @@ func Create(ctx *fiber.Ctx, dto *dto.CreateTransaction) error {
 }
 
 func GetByWallet(ctx *fiber.Ctx, wallet string) error {
-	transaction := new(model.TransactionData)
+	transaction := new(model.Header)
 
 	if err := database.DB.Db.Where("user_wallet_address = ?", wallet).First(transaction).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -37,7 +37,7 @@ func GetByWallet(ctx *fiber.Ctx, wallet string) error {
 }
 
 func GetAll(ctx *fiber.Ctx) error {
-	var transactions []model.TransactionData
+	var transactions []model.Header
 
 	if err := database.DB.Db.Find(&transactions).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
@@ -51,7 +51,7 @@ func GetAll(ctx *fiber.Ctx) error {
 }
 
 func Delete(ctx *fiber.Ctx, id int) error {
-	transaction := new(model.TransactionData)
+	transaction := new(model.Header)
 	database.DB.Db.Delete(transaction, id)
 	return ctx.Status(200).JSON("OK")
 }

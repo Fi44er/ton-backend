@@ -55,7 +55,7 @@ func main() {
 		log.Fatalf("Connection error to database: %v", err)
 	}
 
-	if err = db.Db.AutoMigrate(&model.TransactionData{}); err != nil {
+	if err = db.Db.AutoMigrate(&model.Header{}, &model.Body{}); err != nil {
 		log.Fatalf("Database migration failed: %v", err)
 	}
 
