@@ -9,12 +9,9 @@ import (
 )
 
 func Create(ctx *fiber.Ctx) error {
-	dto := new(dto.CreateTransaction)
+	dto := new(dto.Req)
 	if err := ctx.BodyParser(dto); err != nil {
 		return ctx.Status(400).JSON(fiber.Map{"error": "Не удается прочитать JSON"})
-	}
-	if err := dto.Validate(); err != nil {
-		return ctx.Status(404).JSON(fiber.Map{"error": err.Error()})
 	}
 	return service.Create(ctx, dto)
 }
