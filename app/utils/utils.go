@@ -38,7 +38,7 @@ func CheckValidTransaction(hash string) error {
 	}
 
 	if isTransactionEmpty(data) {
-		time.Sleep(10 * time.Second)
+		time.Sleep(3 * time.Minute)
 		data, err = getTransaction(hash)
 		if err != nil {
 			return err

@@ -10,39 +10,33 @@ import (
 )
 
 func Create(ctx *fiber.Ctx, dto *dto.Req) error {
-	// Проверяем валидность транзакции по хешу
 	err := utils.CheckValidTransaction(dto.Header.Hash)
 	if err != nil {
 		return ctx.Status(400).JSON(fiber.Map{"error": err})
 	}
 
-	// Создаем запись в таблице Body
 	bodyTransaction := model.Body{
 		UserWalletAddress: dto.Body.UserWalletAddress,
 		DepositeDate:      dto.Body.DepositeDate,
 		ReceivingDate:     dto.Body.ReceivingDate,
 		Amount:            dto.Body.Amount,
-		Revards:           dto.Body.Revards,
+		Rewards:           dto.Body.Rewards,
 	}
 
-	// Сохраняем запись в таблице Body и получаем её ID
 	if err := database.DB.Db.Create(&bodyTransaction).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	// Создаем запись в таблице Header, используя ID из созданной записи Body
 	headerTransaction := model.Header{
 		UserWalletAddress: dto.Body.UserWalletAddress,
 		Hash:              dto.Header.Hash,
-		BodyID:            bodyTransaction.Id, // Устанавливаем связь с Body
+		BodyID:            bodyTransaction.Id,
 	}
 
-	// Сохраняем запись в таблице Header
 	if err := database.DB.Db.Create(&headerTransaction).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	// Возвращаем созданные записи
 	return ctx.Status(200).JSON(fiber.Map{"status": "OK"})
 }
 
