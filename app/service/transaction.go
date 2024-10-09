@@ -15,27 +15,22 @@ func Create(ctx *fiber.Ctx, dto *dto.Req) error {
 		return ctx.Status(400).JSON(fiber.Map{"error": err})
 	}
 
-	walletModel := new(model.Body)
-	result := database.DB.Db.Where("user_wallet_address = ?", dto.Body.UserWalletAddress).First(walletModel)
+	bodyTransaction := model.Body{
+		UserWalletAddress: dto.Body.UserWalletAddress,
+		DepositeDate:      dto.Body.DepositeDate,
+		ReceivingDate:     dto.Body.ReceivingDate,
+		Amount:            dto.Body.Amount,
+		Rewards:           dto.Body.Rewards,
+	}
 
-	if result.RowsAffected == 0 {
-		walletModel.UserWalletAddress = dto.Body.UserWalletAddress
-		walletModel.DepositeDate = dto.Body.DepositeDate
-		walletModel.ReceivingDate = dto.Body.ReceivingDate
-		walletModel.Amount = dto.Body.Amount
-		walletModel.Rewards = dto.Body.Rewards
-
-		if err := database.DB.Db.Create(&walletModel).Error; err != nil {
-			return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
-		}
-	} else if result.Error != nil {
-		return ctx.Status(500).JSON(fiber.Map{"error": result.Error.Error()})
+	if err := database.DB.Db.Create(&bodyTransaction).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	headerTransaction := model.Header{
 		UserWalletAddress: dto.Body.UserWalletAddress,
 		Hash:              dto.Header.Hash,
-		BodyID:            walletModel.Id,
+		BodyID:            bodyTransaction.Id,
 	}
 
 	if err := database.DB.Db.Create(&headerTransaction).Error; err != nil {
@@ -46,9 +41,9 @@ func Create(ctx *fiber.Ctx, dto *dto.Req) error {
 }
 
 func GetByWallet(ctx *fiber.Ctx, wallet string) error {
-	walletModel := new(model.Body)
+	var walletModel []model.Body
 
-	if err := database.DB.Db.Where("user_wallet_address = ?", wallet).First(walletModel).Error; err != nil {
+	if err := database.DB.Db.Where("user_wallet_address = ?", wallet).Find(&walletModel).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return ctx.Status(404).JSON(fiber.Map{"error": "Транзакция не найдена"})
 		}
