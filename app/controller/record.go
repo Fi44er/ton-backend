@@ -13,3 +13,7 @@ func Update(ctx *fiber.Ctx) error {
 	}
 	return service.Update(ctx, req)
 }
+
+func GetAllRecords(ctx *fiber.Ctx) error {
+	return service.GetRecords(ctx)
+}

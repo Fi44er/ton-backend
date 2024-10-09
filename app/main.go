@@ -28,6 +28,7 @@ func (s *server) allRoutes() {
 
 	record := api.Group("/record")
 	record.Put("/", controller.Update)
+	record.Get("/", controller.GetAllRecords)
 }
 
 func NewServer(port string) *server {

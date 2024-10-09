@@ -5,5 +5,5 @@ type Header struct {
 	UserWalletAddress string `json:"user_wallet_address" gorm:"type:string;not null"`
 	Hash              string `json:"hash" gorm:"type:string;not null"`
 	BodyID            int    `json:"body_id" gorm:"type:int;not null"`
-	Body              Body   `gorm:"foreignKey:BodyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Body              Body   `json:"body" gorm:"foreignKey:BodyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

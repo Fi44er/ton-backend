@@ -10,12 +10,10 @@ import (
 func Update(ctx *fiber.Ctx, req *dto.Record) error {
 	var records []model.Record
 
-	// Получаем все записи (или можно реализовать фильтрацию по ID, если нужно)
 	if err := database.DB.Db.Find(&records).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	// Проходим по всем записям и обновляем только измененные поля
 	for i := range records {
 		updateData := req.Data[i]
 		if err := database.DB.Db.Model(&records[i]).Updates(&updateData).Error; err != nil {
@@ -24,4 +22,18 @@ func Update(ctx *fiber.Ctx, req *dto.Record) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{"status": "OK"})
+}
+
+func GetRecords(ctx *fiber.Ctx) error {
+	var records []model.Record
+
+	if err := database.DB.Db.Preload("Body").Find(&records).Error; err != nil {
+		return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	if len(records) == 0 {
+		return ctx.Status(404).JSON(fiber.Map{"error": "Ни одной записи не найдено"})
+
+	}
+	return ctx.Status(200).JSON(records)
 }
