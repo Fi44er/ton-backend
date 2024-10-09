@@ -27,7 +27,7 @@ func Update(ctx *fiber.Ctx, req *dto.Record) error {
 func GetRecords(ctx *fiber.Ctx) error {
 	var records []model.Record
 
-	if err := database.DB.Db.Preload("Body").Find(&records).Error; err != nil {
+	if err := database.DB.Db.Find(&records).Error; err != nil {
 		return ctx.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 
